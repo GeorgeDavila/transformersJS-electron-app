@@ -9,22 +9,38 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-const createWindow = () => {
+// see https://www.electronjs.org/docs/latest/tutorial/context-isolation & https://www.electronjs.org/docs/latest/api/structures/web-preferences
+windowOptions1 = {
+    show: false,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.resolve(path.join(__dirname, 'preload.js')) //You need to create a file named preload.js (or any name) in your code
+    },
+  }
+  
+  const createWindow = () => {
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-        },
-    });
-
+    // Electron default 
+    //const mainWindow = new BrowserWindow({
+    //  width: 800,
+    //  height: 600,
+    //  webPreferences: {
+    //    preload: path.join(__dirname, 'preload.js'),
+    //  },
+    //});
+  
+    const mainWindow = new BrowserWindow(windowOptions1);
+    mainWindow.setMenu(null) //remove toolbar per https://stackoverflow.com/questions/39091964/remove-menubar-from-electron-app
+    mainWindow.maximize(); //make full size 
+    mainWindow.show();
+  
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
+  
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
-};
+    //mainWindow.webContents.openDevTools();
+  };
 
 
 // This method will be called when Electron has finished
